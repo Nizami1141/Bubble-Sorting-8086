@@ -1,0 +1,43 @@
+SET 0                  ; Initialize array address
+ARRAY: 
+DB 0x25 DB 0x45 DB 0x17 DB 0x2 DB 0x78 
+DB 0x48 DB 0x91 DB 0x0 DB 0x33 DB 0x59
+
+start:
+    MOV AX, 0           ; Load ARRAY address into AX
+    MOV DS, AX          ; Set DS to ARRAY
+    MOV DX, 10          ; Total elements in the array
+
+_loop1: 
+    DEC DX              ; Decrease passes
+    CMP DX, 0           ; Check if all passes done
+    JE END_PROGRAM      ; End if sorted
+
+    MOV SI, 0           ; Reset index
+    MOV DI, 0           ; Track swaps
+    MOV CX, DX          ; Set inner loop count
+
+_loop2:
+    MOV AL, byte DS[SI]     ; Load current value
+    MOV BL, byte DS[SI,1]   ; Load next value
+
+    CMP AL, BL              ; Compare values
+    JG swap          ; Swap if needed
+
+_next:
+    INC SI                  ; Move to next index
+    LOOP loop2         ; Repeat inner loop if not done
+
+    CMP DI, 0               ; Check for swaps
+    JE END_PROGRAM          ; End if no swaps
+    
+    JNZ loop1         ; Continue passes if swaps made
+
+_swap:
+    MOV byte DS[SI], BL     ; Swap smaller to current
+    MOV byte DS[SI,1], AL   ; Swap larger to next
+    MOV DI, 1               ; Mark swap
+    JMP next         ; Check next pair
+
+END_PROGRAM:
+    HLT                     ; Stop execution
